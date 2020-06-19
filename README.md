@@ -52,7 +52,7 @@ This leads to a greedy algorithm in a direct way: Given the <img alt="\inline w_
 them, set <img alt="\inline S = \{1,\ldots, t\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%20%3D%20%5C%7B1%2C%5Cldots%2C%20t%5C%7D" align="center"/>, <img alt="\inline T=\{n-t+1,\ldots, n\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20T%3D%5C%7Bn-t%2B1%2C%5Cldots%2C%20n%5C%7D" align="center"/> and update <img alt="\inline S,T" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%2CT" align="center"/>
 as described above in a single pass over the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> values and output <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
 The runtime of this algorithm is <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>, dominated by the sorting
-subroutine.
+subroutine. This is also the best runtime given by the IOI solutions.
 
 Here we will solve this problem in <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/> time--without sorting--by implementing
 the above idea more carefully. First we need a generic subroutine which I call
@@ -192,3 +192,31 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
 Rust is really expressive! I can't imagine transforming the weights array to
 WeightIndex array in C++ standard library.
 Here is the full solution: [molecules.rs](molecules.rs)
+
+### Official testsuite
+
+Let us finally try our solution on the official test suite.
+I am having a real tough time finding a good way to parse whitespace separated
+integers from text file in a streaming fashion with the Rust standard library.
+The test files can be quite large, especially for problems with small 
+complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a  streaming reader is really needed.
+The best thing I could come up with [bench.rs](bench.rs)#`test_from_file` is not
+only super ugly, but also still involves an extra string copy per integer.
+I implemented the test runner as a cargo bench to get some timing info.
+You can run the bechmark as so:
+```sh
+cargo bench
+
+     Running target/release/deps/bench-a9da5db63e60670a
+
+running 4 tests
+test huge_tests   ... bench:  14,444,431 ns/iter (+/- 912,981)
+test large_tests  ... bench: 172,175,577 ns/iter (+/- 950,302)
+test medium_tests ... bench: 156,179,196 ns/iter (+/- 1,020,305)
+test small_tests  ... bench:  34,498,891 ns/iter (+/- 409,675)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 4 measured; 0 filtered out
+
+```
+The numbers are from my Intel(R) Celeron(R) 2955U @ 1.40GHz beast of a 
+workstation (a chromebox-turned-xubuntu monstrosity).
