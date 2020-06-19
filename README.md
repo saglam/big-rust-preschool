@@ -125,7 +125,7 @@ search:
 
 
 Here if the full code with the generics [sumth_elements.rs](sumth_element.rs).
-If you have clone this repo, you can run the unit tests by
+If you have cloned this repo, you can run the unit tests by
 ```sh
 cargo test sumth_element --release
 ```
@@ -133,7 +133,11 @@ cargo test sumth_element --release
 ### Linear time solution
 
 Let us go back to `molecues`. Now with the `sumth_element` in hand, here is 
-the linear time solution:
+the linear time solution. First we map the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> array into the array of
+tuples <img alt="\inline (i, w_i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28i%2C%20w_i%29" align="center"/> since at the end we need to output the indices.
+We use `u32` for both the "weights" <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> and the indices so as to make layout
+as compact as possible for cache efficiency. However, we need `u64`s 
+whenever we need to sum weights since for large instances it will overflow.
 
 ```rust
 struct WeightIndex {
@@ -181,5 +185,5 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
     }
 }
 ```
-Rust is really expressive. I can't imagine transforming the weights array to
+Rust is really expressive! I can't imagine transforming the weights array to
 WeightIndex array in C++ standard library.
