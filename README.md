@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="img/brp.png">
+</div>
+
 ## What is this?
 
 In this repo I keep pieces of code I write as I try to `wrap` my mind

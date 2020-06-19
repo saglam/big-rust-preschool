@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="img/brp.png">
+</div>
+
 ## What is this?
 
 In this repo I keep pieces of code I write as I try to `wrap` my mind
@@ -121,7 +125,7 @@ l
 That is, wherever the binary search is about to query an index $m$, we do a
 minimal amount of sorting so as to ensure the property required by the binary
 search:
-$$ a[i] \le a[m] \text{ for } i<m \text{ and } a[m] \ge a[i] \text{ for } i>m.$$
+$$ a[i] \le a[m] \text{ for } i<m \text{ and } a[m] \le a[i] \text{ for } m<i.$$
 Each invocation of the `order_stat::kth` takes time linear in the size of the 
 slice we pass to it. Since the slice size is halved in each iteration, the total
 runtime comes to $O(n)$.
@@ -206,9 +210,9 @@ The test files can be quite large, especially for problems with small
 complexity (such as $O(n\log n)$), so a  streaming reader is really needed.
 Note that usually all the data is in one line so the `BufReader::lines()` is
 not going to do it.
-The best thing I could come up with [bench.rs](bench.rs)`::test_from_file()` is
-not only super ugly, but is also suboptional--it still involves an extra string
-copy per integer.
+The best thing I could come up with [bench.rs](https://github.com/saglam/big-rust-preschool/blob/8888750126d77f69146814fc8372addc0b574da5/bench.rs#L11)
+`::test_from_file()` is not only super ugly, but is also suboptimal--it still
+involves an extra string copy per integer.
 I implemented the test runner as a cargo bench to get some timing info.
 You can run the bechmark as so:
 ```sh
@@ -226,4 +230,4 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 4 measured; 0 filtered out
 
 ```
 The numbers are from my Intel(R) Celeron(R) 2955U @ 1.40GHz beast of a 
-workstation (a chromebox-turned-xubuntu monstrosity).
+workstation.
