@@ -123,7 +123,7 @@ l
 That is, wherever the binary search is about to query an index <img alt="\inline m" src="https://latex.codecogs.com/png.latex?%5Cinline%20m" align="center"/>, we do a
 minimal amount of sorting so as to ensure the property required by the binary
 search:
-<p align=center><img alt="\displaystyle{ a[i] \le a[m] \text{ for } i\ltm \text{ and } a[m] \ge a[i] \text{ for } i\gtm.}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%20a%5Bi%5D%20%5Cle%20a%5Bm%5D%20%5Ctext%7B%20for%20%7D%20i%3Cm%20%5Ctext%7B%20and%20%7D%20a%5Bm%5D%20%5Cge%20a%5Bi%5D%20%5Ctext%7B%20for%20%7D%20i%3Em.%7D"/></p>
+<p align=center><img alt="\displaystyle{ a[i] \le a[m] \text{ for } i\ltm \text{ and } a[m] \le a[i] \text{ for } m\lti.}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%20a%5Bi%5D%20%5Cle%20a%5Bm%5D%20%5Ctext%7B%20for%20%7D%20i%3Cm%20%5Ctext%7B%20and%20%7D%20a%5Bm%5D%20%5Cle%20a%5Bi%5D%20%5Ctext%7B%20for%20%7D%20m%3Ci.%7D"/></p>
 
 Each invocation of the `order_stat::kth` takes time linear in the size of the 
 slice we pass to it. Since the slice size is halved in each iteration, the total
@@ -209,9 +209,9 @@ The test files can be quite large, especially for problems with small
 complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a  streaming reader is really needed.
 Note that usually all the data is in one line so the `BufReader::lines()` is
 not going to do it.
-The best thing I could come up with [bench.rs](bench.rs)`::test_from_file()` is
-not only super ugly, but is also suboptional--it still involves an extra string
-copy per integer.
+The best thing I could come up with [bench.rs](https://github.com/saglam/big-rust-preschool/blob/8888750126d77f69146814fc8372addc0b574da5/bench.rs#L11)
+`::test_from_file()` is not only super ugly, but is also suboptimal--it still
+involves an extra string copy per integer.
 I implemented the test runner as a cargo bench to get some timing info.
 You can run the bechmark as so:
 ```sh
@@ -229,4 +229,4 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 4 measured; 0 filtered out
 
 ```
 The numbers are from my Intel(R) Celeron(R) 2955U @ 1.40GHz beast of a 
-workstation (a chromebox-turned-xubuntu monstrosity).
+workstation.
