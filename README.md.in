@@ -1,0 +1,124 @@
+## What is this?
+
+In this repo I keep pieces of code I write as I try to `wrap` my mind
+around Rust and its ownership system.
+As a first step, I want to solve an IOI2016 problem named `molecules` in Rust,
+since the solution I have in mind involves a generic algorithm
+as a subroutine and I will try to implement this subroutine as generally as
+possible using Rust generics and curious to see how this interacts with the
+ownership system. The problem goes as follows:
+
+> We are given $n$ nonnegative integers $w_1$, $w_2, \ldots, w_n\,$ and an 
+> inclusive range $[l, u]$, with the promise that $u - l \ge
+  \mathrm{max}_i w_i - \mathrm{min}_i w_i$.
+> Find a subset of $w_i$'s which sum to a number in the range $[l, u]$ or if no
+> such set exists, output the empty set.
+
+Assume for a moment that $w_i$'s are sorted in increasing order:
+
+$$
+0 \le w_1 \le w_2 \le \ldots \le w_n.
+$$
+
+Let $t$ be the largest index such that $w_1 + w_2 +\cdots + w_t < l$. If 
+the sum of the first $t+1$ elements is at most $u$, then we have found a
+solution: a correct answer to the problem is $[1..t+1]$.
+
+If the other hand $w_1+ \ldots + w_{t+1} > u$, then we know that the smallest
+$t+1$-element subset is too large and the smallest $t$-element subset is too
+small. Therefore if there is a correct subset, it must have exactly $t$
+elements.
+
+Now consider the largest $t$-element subset: $w_{n-t+1}, \ldots, w_{n}$.
+If this subset sums to a value smaller than $l$, then there are no solutions
+by our previous observation. If this subset sums to a value no smaller than 
+$l$ on the other hand, a solution is guaranteed to exists and here is why:
+Let 
+$$
+S = \{1, \ldots, t\} \text{, and } T=\{n-t+1, \ldots, n\}.
+$$
+As long as $\sum_{i\in S} w_i$ is smaller than $l$, exchange the smallest
+index in $S$ with the largest index in $T$. This exchange is guaranteed to 
+increase the sum $\sum_{i\in S} w_i$, but no single exchange can push the value 
+from smaller than $l$ to larger than $u$ due to the promise $u - l \ge
+\mathrm{max}_i w_i - \mathrm{min}_i w_i$. So we have a value that is initially
+smaller than $l$, and eventually becomes larger than $u$ and in no single step
+jumps from smaller than $l$ to larger than $u$. This means that in at least one
+step the value must be in $[l,u]$.
+
+This leads to a greedy algorithm in a direct way: Given the $w_i$ values, sort
+them, set $S = \{1,\ldots, t\}$, $T=\{n-t+1,\ldots, n\}$ and update $S,T$
+as described above in a single pass over the $w_i$ values and output $S$.
+The runtime of this algorithm is $O(n\log n)$, dominated by the sorting
+subroutine.
+
+Here we will solve this problem in $O(n)$ time--without sorting--by implementing
+the above idea more carefully. First we need a generic subroutine which I call
+the "sumth_element", which is a bit like the `std::nth_element` in C++
+(a.k.a. quickselect) but is concerned with tail sums.
+
+### sumth_element
+
+> Suppose we are give an unsorted array $a_1, a_2,\ldots, a_n$ and a number $S$.
+> Find the largest $t$ such that the sum of the smallest $t$ elements of $a$
+> is at most $S$.
+
+I call this the "sumth_element" for lack of a better name (and imagination) and 
+is meant to be in analogy to `std::nth_element`
+(if you know the proper name for this do let me know).
+
+If the array was sorted, we could have found this index in $O(\log n)$ time
+by a binary search:
+```rust
+let mut l = 0;
+let mut r = a.len();
+
+while l < r {
+    let m = l + (r - l) / 2;
+    let tail_sum = a[l..=m].iter().sum();
+    if tail_sum <= sum {
+        l = m + 1;
+        sum -= tail_sum;
+    } else {
+        r = m;
+    }
+}
+l
+```
+Any binary search working on sorted arrays can be translated mechanically to 
+work on arbitrary arrays in $O(n)$ time by using the quickselect algorithm.
+It looks like rust standard library does not have a quickselect
+implementation and I'm not even going to think about attempting to implement
+it (I don't think I have ever implemented it, in any language).
+It turns out there are several crates implementing this. I will go with the
+`order_stat` crate:
+```toml
+# Cargo.toml
+[dependencies]
+order-stat = "0.1"
+```
+
+Here is the version that works on arbitrary arrays:
+```rust
+let mut l = 0;
+let mut r = a.len();
+
+while l < r {
+    let m = l + (r - l) / 2;
+    order_stat::kth(&mut a[l..r], m - l); // added line
+    let tail_sum = a[l..=m].iter().sum();
+    if tail_sum <= sum {
+        l = m + 1;
+        sum -= tail_sum;
+    } else {
+        r = m;
+    }
+}
+l
+```
+That is, wherever the binary search is about to query an index $m$, we do a
+minimal amount of sorting so as to ensure the property required by the binary
+search:
+$$ a[i] \le a[m] \text{ for } i<m \text{ and } a[m] \ge a[i] \text{ for } i>m $$
+
+Here if the full code with the generics [sumth_elements.rs](sumth_element.rs).
