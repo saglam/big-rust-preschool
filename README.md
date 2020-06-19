@@ -69,7 +69,8 @@ I call this the "sumth_element" for lack of a better name (and imagination) and
 is meant to be in analogy to `std::nth_element`
 (if you know the proper name for this do let me know).
 
-If the array was sorted, we could have found this index in <img alt="\inline O(\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28%5Clog%20n%29" align="center"/> time
+If the array was sorted and we had oracle access to prefix sums of <img alt="\inline a" src="https://latex.codecogs.com/png.latex?%5Cinline%20a" align="center"/>,
+we could have found this index in <img alt="\inline O(\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28%5Clog%20n%29" align="center"/> time
 by a binary search:
 ```rust
 let mut l = 0;
@@ -123,6 +124,9 @@ minimal amount of sorting so as to ensure the property required by the binary
 search:
 <p align=center><img alt="\displaystyle{ a[i] \le a[m] \text{ for } i\ltm \text{ and } a[m] \ge a[i] \text{ for } i\gtm.}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%20a%5Bi%5D%20%5Cle%20a%5Bm%5D%20%5Ctext%7B%20for%20%7D%20i%3Cm%20%5Ctext%7B%20and%20%7D%20a%5Bm%5D%20%5Cge%20a%5Bi%5D%20%5Ctext%7B%20for%20%7D%20i%3Em.%7D"/></p>
 
+Each invocation of the `order_stat::kth` takes time linear in the slice
+we pass to it. Since the slice size is halved in each iteration, the total
+runtime comes to <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/>.
 
 Here if the full code with the generics [sumth_elements.rs](sumth_element.rs).
 If you have cloned this repo, you can run the unit tests by
