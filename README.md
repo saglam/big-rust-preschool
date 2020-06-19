@@ -128,7 +128,10 @@ Each invocation of the `order_stat::kth` takes time linear in the size of the
 slice we pass to it. Since the slice size is halved in each iteration, the total
 runtime comes to <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/>.
 
-Here is the full code with the generics [sumth_elements.rs](sumth_element.rs).
+Here is the full code with the generics: [sumth_elements.rs](sumth_element.rs).
+We mutably borrow the input array and further mutably 'lend' it to
+`stat_order::kth` so an explicit lifetime annotation is needed.
+
 If you have cloned this repo, you can run the unit tests by
 ```sh
 cargo test sumth_element --release
@@ -203,7 +206,8 @@ complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.co
 Note that usually all the data is in one line so the `BufReader::lines()` is
 not going to do it.
 The best thing I could come up with [bench.rs](bench.rs)`::test_from_file()` is
-not only super ugly, but is also incurring an extra string copy per integer.
+not only super ugly, but is also suboptional--it still involves an extra string
+copy per integer.
 I implemented the test runner as a cargo bench to get some timing info.
 You can run the bechmark as so:
 ```sh
