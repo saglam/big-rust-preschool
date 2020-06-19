@@ -4,8 +4,12 @@
 
 ## What is this?
 
-In this repo I keep pieces of code I write as I try to `wrap` my mind
-around Rust and its ownership system.
+In this repo I keep pieces of code I write as I try to wrap my mind
+around Rust and its ownership system and write notes about my findings and
+experiences here in the `README.md` file. It is kind of a blog inside
+github, which I call a *glog*, which is an accurate name not only in the 
+github + blog sense, but also in the blog + gulag sense.
+
 As a first goal, I want to solve an IOI2016 problem named `molecules` in Rust,
 since the solution I have in mind involves a generic algorithm
 as a subroutine and I will try to implement this subroutine as generally as
@@ -21,15 +25,15 @@ ownership system. The problem goes as follows:
 Assume for a moment that <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/>'s are sorted in increasing order:
 
 <p align=center><img alt="\displaystyle{
-0 \le w_1 \le w_2 \le \ldots \le w_n.
-}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%0A0%20%5Cle%20w_1%20%5Cle%20w_2%20%5Cle%20%5Cldots%20%5Cle%20w_n.%0A%7D"/></p>
+0 \le w_1 \le w_2 \le \cdots \le w_n.
+}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%0A0%20%5Cle%20w_1%20%5Cle%20w_2%20%5Cle%20%5Ccdots%20%5Cle%20w_n.%0A%7D"/></p>
 
 
 Let <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/> be the largest index such that <img alt="\inline w_1 + w_2 +\cdots + w_t \lt l" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1%20%2B%20w_2%20%2B%5Ccdots%20%2B%20w_t%20%3C%20l" align="center"/>. If 
 the sum of the first <img alt="\inline t+1" src="https://latex.codecogs.com/png.latex?%5Cinline%20t%2B1" align="center"/> elements is at most <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/>, then we have found a
-solution: a correct answer to the problem is <img alt="\inline [1..t+1]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5B1..t%2B1%5D" align="center"/>.
+solution: a correct answer to the problem is <img alt="\inline [1, t+1]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5B1%2C%20t%2B1%5D" align="center"/>.
 
-If the other hand <img alt="\inline w_1+ \ldots + w_{t+1} \gt u" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1%2B%20%5Cldots%20%2B%20w_%7Bt%2B1%7D%20%3E%20u" align="center"/>, then we know that the smallest
+If on the other hand <img alt="\inline w_1+ \cdots + w_{t+1} \gt u" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1%2B%20%5Ccdots%20%2B%20w_%7Bt%2B1%7D%20%3E%20u" align="center"/>, then we know that the smallest
 <img alt="\inline t+1" src="https://latex.codecogs.com/png.latex?%5Cinline%20t%2B1" align="center"/>-element subset is too large and the smallest <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/>-element subset is too
 small. Therefore if there is a correct subset, it must have exactly <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/>
 elements.
@@ -59,7 +63,7 @@ the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%2
 The runtime of this algorithm is <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>, dominated by the sorting
 subroutine. This is also the best runtime given by the IOI solutions.
 
-Here we will solve this problem in <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/> time--without sorting--by implementing
+Here we will solve this problem in <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/> time—without sorting—by implementing
 the above idea more carefully. First we need a generic subroutine which I call
 the "sumth_element", which is a bit like the `std::nth_element` in C++
 (a.k.a. quickselect) but is concerned with tail sums.
@@ -71,7 +75,7 @@ the "sumth_element", which is a bit like the `std::nth_element` in C++
 > is at most <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
 
 I call this the "sumth_element" for lack of a better name (and imagination) and 
-is meant to be in analogy to `std::nth_element`
+is meant to be in analogy with `std::nth_element`
 (if you know the proper name for this do let me know).
 
 If the array was sorted and we had oracle access to prefix sums of <img alt="\inline a" src="https://latex.codecogs.com/png.latex?%5Cinline%20a" align="center"/>,
@@ -150,9 +154,10 @@ cargo test sumth_element --release
 Let us go back to `molecues`. Now with the `sumth_element` in hand, here is 
 the linear time solution. First we map the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> array into the array of
 tuples <img alt="\inline (i, w_i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28i%2C%20w_i%29" align="center"/> since at the end we need to output the indices.
-We use `u32` for both the "weights" <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> and the indices so as to make layout
-as compact as possible for cache efficiency. However, we need `u64`s 
-whenever we need to sum weights since for large instances it will overflow.
+We use `u32` for both the "weights" <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> and the indices so as to make memory
+layout as compact as possible for cache efficiency. However, we need `u64`s 
+whenever we need to sum the weights since for large input instances `u32` will
+overflow.
 
 ```rust
 struct WeightIndex {
@@ -204,22 +209,24 @@ Rust is really expressive! I can't imagine transforming the weights array to
 WeightIndex array in C++ standard library.
 Here is the full solution: [molecules.rs](molecules.rs).
 
-### Official testsuite
+### Official test suite
 
 Let us finally try our solution on the official test suite.
 I am having a real tough time finding a good way to parse whitespace separated
-integers from text file in a streaming fashion with the Rust standard library.
+integers from a text file in a streaming fashion with the Rust standard library
+(or any crate I could Google).
 The test files can be quite large, especially for problems with small 
-complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a  streaming reader is really needed.
-Note that usually all the data is in one line so the `BufReader::lines()` is
+complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a  streaming reader is necessary.
+Note that usually all data is in one line so the `BufReader::lines()` is
 not going to do it.
-The best thing I could come up with [bench.rs](https://github.com/saglam/big-rust-preschool/blob/8888750126d77f69146814fc8372addc0b574da5/bench.rs#L11)
-`::test_from_file()` is not only super ugly, but is also suboptimal--it still
+The best thing I could come up with, [bench.rs](https://github.com/saglam/big-rust-preschool/blob/8888750126d77f69146814fc8372addc0b574da5/bench.rs#L11)
+`::test_from_file()`, is not only super ugly, but is also suboptimal—it still
 involves an extra string copy per integer.
 I implemented the test runner as a cargo bench to get some timing info.
 You can run the bechmark as so:
 ```sh
-cargo bench
+rustup install nightly
+cargo +nightly bench
 
      Running target/release/deps/bench-a9da5db63e60670a
 
