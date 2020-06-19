@@ -3,11 +3,10 @@
 extern crate test;
 
 use atoi::atoi;
+use molecules;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use test::Bencher;
-
-use molecules;
 
 fn test_from_file(file_name: &str) {
     println!("{}", file_name);
