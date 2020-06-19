@@ -8,5 +8,10 @@ edition = "2018"
 name = "molecules"
 path = "molecules.rs"
 
+[[bench]]
+name = "bench"
+path = "bench.rs"
+
 [dependencies]
 order-stat = "0.1"
+atoi = "0.3.2"

@@ -50,7 +50,7 @@ This leads to a greedy algorithm in a direct way: Given the $w_i$ values, sort
 them, set $S = \{1,\ldots, t\}$, $T=\{n-t+1,\ldots, n\}$ and update $S,T$
 as described above in a single pass over the $w_i$ values and output $S$.
 The runtime of this algorithm is $O(n\log n)$, dominated by the sorting
-subroutine.
+subroutine. This is also the best runtime given by the IOI solutions.
 
 Here we will solve this problem in $O(n)$ time--without sorting--by implementing
 the above idea more carefully. First we need a generic subroutine which I call
@@ -189,3 +189,31 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
 Rust is really expressive! I can't imagine transforming the weights array to
 WeightIndex array in C++ standard library.
 Here is the full solution: [molecules.rs](molecules.rs)
+
+### Official testsuite
+
+Let us finally try our solution on the official test suite.
+I am having a real tough time finding a good way to parse whitespace separated
+integers from text file in a streaming fashion with the Rust standard library.
+The test files can be quite large, especially for problems with small 
+complexity (such as $O(n\log n)$), so a  streaming reader is really needed.
+The best thing I could come up with [bench.rs](bench.rs)#`test_from_file` is not
+only super ugly, but also still involves an extra string copy per integer.
+I implemented the test runner as a cargo bench to get some timing info.
+You can run the bechmark as so:
+```sh
+cargo bench
+
+     Running target/release/deps/bench-a9da5db63e60670a
+
+running 4 tests
+test huge_tests   ... bench:  14,444,431 ns/iter (+/- 912,981)
+test large_tests  ... bench: 172,175,577 ns/iter (+/- 950,302)
+test medium_tests ... bench: 156,179,196 ns/iter (+/- 1,020,305)
+test small_tests  ... bench:  34,498,891 ns/iter (+/- 409,675)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 4 measured; 0 filtered out
+
+```
+The numbers are from my Intel(R) Celeron(R) 2955U @ 1.40GHz beast of a 
+workstation (a chromebox-turned-xubuntu monstrosity).
