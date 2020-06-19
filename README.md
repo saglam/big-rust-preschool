@@ -154,32 +154,32 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
         .map(|(i, &w)| WeightIndex { w, i: i as u32 })
         .collect();
 
-    let (i, slack) = sumth_element(&mut wi, l - 1);
-    if i == wi.len() {
+    let (t, slack) = sumth_element(&mut wi, l - 1);
+    if t == wi.len() {
         return vec![];
     }
-    order_stat::kth(&mut wi[i..], 0);
+    order_stat::kth(&mut wi[t..], 0);
 
     let sum = l - 1 - slack;
-    if sum + wi[i].w as u64 <= u {
-        return wi[..=i].iter().map(|wi| wi.i).collect();
+    if sum + wi[t].w as u64 <= u {
+        return wi[..=t].iter().map(|wi| wi.i).collect();
     }
 
-    if i + i + 1 < w.len() && i > 0 {
-        order_stat::kth(&mut wi[i + 1..], w.len() - (i + i + 1));
+    if t + t + 1 < w.len() && t > 0 {
+        order_stat::kth(&mut wi[t + 1..], w.len() - (t + t + 1));
     }
 
     let mut sum = sum;
     let mut j = 0;
     let mut k = wi.len() - 1;
-    while sum < l && j < i {
+    while sum < l && j < t {
         sum += (wi[k].w - wi[j].w) as u64;
         wi.swap(j, k);
         j += 1;
         k -= 1;
     }
     if sum >= l {
-        wi[..i].iter().map(|wi| wi.i).collect()
+        wi[..t].iter().map(|wi| wi.i).collect()
     } else {
         vec![]
     }
@@ -187,3 +187,4 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
 ```
 Rust is really expressive! I can't imagine transforming the weights array to
 WeightIndex array in C++ standard library.
+Here is the full solution: [molecules.rs](molecules.rs)
