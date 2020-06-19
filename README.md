@@ -200,6 +200,8 @@ I am having a real tough time finding a good way to parse whitespace separated
 integers from text file in a streaming fashion with the Rust standard library.
 The test files can be quite large, especially for problems with small 
 complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a  streaming reader is really needed.
+Note that usually all the data is in one line so the `BufReader::lines()` is
+not going to do it.
 The best thing I could come up with [bench.rs](bench.rs)#`test_from_file` is not
 only super ugly, but also still involves an extra string copy per integer.
 I implemented the test runner as a cargo bench to get some timing info.
