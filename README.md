@@ -121,7 +121,65 @@ l
 That is, wherever the binary search is about to query an index <img alt="\inline m" src="https://latex.codecogs.com/png.latex?%5Cinline%20m" align="center"/>, we do a
 minimal amount of sorting so as to ensure the property required by the binary
 search:
-<p align=center><img alt="\displaystyle{ a[i] \le a[m] \text{ for } i\ltm \text{ and } a[m] \ge a[i] \text{ for } i\gtm }" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%20a%5Bi%5D%20%5Cle%20a%5Bm%5D%20%5Ctext%7B%20for%20%7D%20i%3Cm%20%5Ctext%7B%20and%20%7D%20a%5Bm%5D%20%5Cge%20a%5Bi%5D%20%5Ctext%7B%20for%20%7D%20i%3Em%20%7D"/></p>
+<p align=center><img alt="\displaystyle{ a[i] \le a[m] \text{ for } i\ltm \text{ and } a[m] \ge a[i] \text{ for } i\gtm.}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%20a%5Bi%5D%20%5Cle%20a%5Bm%5D%20%5Ctext%7B%20for%20%7D%20i%3Cm%20%5Ctext%7B%20and%20%7D%20a%5Bm%5D%20%5Cge%20a%5Bi%5D%20%5Ctext%7B%20for%20%7D%20i%3Em.%7D"/></p>
 
 
 Here if the full code with the generics [sumth_elements.rs](sumth_element.rs).
+If you have clone this repo, you can run the unit tests by
+```sh
+cargo test sumth_element --release
+```
+
+### Linear time solution
+
+Let us go back to `molecues`. Now with the `sumth_element` in hand, here is 
+the linear time solution:
+
+```rust
+struct WeightIndex {
+    pub w: u32,
+    pub i: u32,
+}
+
+pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
+    let l = l as u64;
+    let u = u as u64;
+    let mut wi: Vec<_> = w
+        .iter()
+        .enumerate()
+        .map(|(i, &w)| WeightIndex { w, i: i as u32 })
+        .collect();
+
+    let (i, slack) = sumth_element(&mut wi, l - 1);
+    if i == wi.len() {
+        return vec![];
+    }
+    order_stat::kth(&mut wi[i..], 0);
+
+    let sum = l - 1 - slack;
+    if sum + wi[i].w as u64 <= u {
+        return wi[..=i].iter().map(|wi| wi.i).collect();
+    }
+
+    if i + i + 1 < w.len() && i > 0 {
+        order_stat::kth(&mut wi[i + 1..], w.len() - (i + i + 1));
+    }
+
+    let mut sum = sum;
+    let mut j = 0;
+    let mut k = wi.len() - 1;
+    while sum < l && j < i {
+        sum += (wi[k].w - wi[j].w) as u64;
+        wi.swap(j, k);
+        j += 1;
+        k -= 1;
+    }
+    if sum >= l {
+        wi[..i].iter().map(|wi| wi.i).collect()
+    } else {
+        vec![]
+    }
+}
+```
+Rust is really expressive. I can't imagine transforming the weights array to
+WeightIndex array in C++ standard library.

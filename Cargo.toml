@@ -1,0 +1,12 @@
+[package]
+name = "big-rust-preschool"
+version = "0.1.0"
+authors = ["saglam"]
+edition = "2018"
+
+[lib]
+name = "molecules"
+path = "molecules.rs"
+
+[dependencies]
+order-stat = "0.1"
