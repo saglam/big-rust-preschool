@@ -2,7 +2,7 @@
 
 In this repo I keep pieces of code I write as I try to `wrap` my mind
 around Rust and its ownership system.
-As a first step, I want to solve an IOI2016 problem named `molecules` in Rust,
+As a first goal, I want to solve an IOI2016 problem named `molecules` in Rust,
 since the solution I have in mind involves a generic algorithm
 as a subroutine and I will try to implement this subroutine as generally as
 possible using Rust generics and curious to see how this interacts with the
@@ -48,7 +48,8 @@ step the value must be in $[l,u]$.
 
 This leads to a greedy algorithm in a direct way: Given the $w_i$ values, sort
 them, set $S = \{1,\ldots, t\}$, $T=\{n-t+1,\ldots, n\}$ and update $S,T$
-as described above in a single pass over the $w_i$ values and output $S$.
+as described above until the sum is no smaller than $l$ in a single pass over 
+the $w_i$ values and output $S$.
 The runtime of this algorithm is $O(n\log n)$, dominated by the sorting
 subroutine. This is also the best runtime given by the IOI solutions.
 
@@ -127,7 +128,10 @@ runtime comes to $O(n)$.
 
 Here is the full code with the generics: [sumth_elements.rs](sumth_element.rs).
 We mutably borrow the input array and further mutably 'lend' it to
-`stat_order::kth` so an explicit lifetime annotation is needed.
+`stat_order::kth` so an explicit lifetime annotation is needed. Apparently,
+the annotation I ended up finding from web searches and trial error and
+stackoverflow is called Higher-Rank Trait Bounds. I don't understand why
+anything but HRTBs would be needed yet, though.
 
 If you have cloned this repo, you can run the unit tests by
 ```sh

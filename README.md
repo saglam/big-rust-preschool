@@ -2,7 +2,7 @@
 
 In this repo I keep pieces of code I write as I try to `wrap` my mind
 around Rust and its ownership system.
-As a first step, I want to solve an IOI2016 problem named `molecules` in Rust,
+As a first goal, I want to solve an IOI2016 problem named `molecules` in Rust,
 since the solution I have in mind involves a generic algorithm
 as a subroutine and I will try to implement this subroutine as generally as
 possible using Rust generics and curious to see how this interacts with the
@@ -50,7 +50,8 @@ step the value must be in <img alt="\inline [l,u]" src="https://latex.codecogs.c
 
 This leads to a greedy algorithm in a direct way: Given the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> values, sort
 them, set <img alt="\inline S = \{1,\ldots, t\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%20%3D%20%5C%7B1%2C%5Cldots%2C%20t%5C%7D" align="center"/>, <img alt="\inline T=\{n-t+1,\ldots, n\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20T%3D%5C%7Bn-t%2B1%2C%5Cldots%2C%20n%5C%7D" align="center"/> and update <img alt="\inline S,T" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%2CT" align="center"/>
-as described above in a single pass over the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> values and output <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
+as described above until the sum is no smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> in a single pass over 
+the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> values and output <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
 The runtime of this algorithm is <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>, dominated by the sorting
 subroutine. This is also the best runtime given by the IOI solutions.
 
@@ -130,7 +131,10 @@ runtime comes to <img alt="\inline O(n)" src="https://latex.codecogs.com/png.lat
 
 Here is the full code with the generics: [sumth_elements.rs](sumth_element.rs).
 We mutably borrow the input array and further mutably 'lend' it to
-`stat_order::kth` so an explicit lifetime annotation is needed.
+`stat_order::kth` so an explicit lifetime annotation is needed. Apparently,
+the annotation I ended up finding from web searches and trial error and
+stackoverflow is called Higher-Rank Trait Bounds. I don't understand why
+anything but HRTBs would be needed yet, though.
 
 If you have cloned this repo, you can run the unit tests by
 ```sh
