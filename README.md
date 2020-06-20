@@ -1,20 +1,25 @@
 <div align="center">
-  <img src="img/brp.png">
+  <img src="img/brp2.svg">
 </div>
 
 ## What is this?
 
 In this repo I keep pieces of code I write as I try to wrap my mind
-around Rust and its ownership system and write notes about my findings and
+around Rust and its ownership system and take notes about my findings and
 experiences here in the `README.md` file. It is kind of a blog inside
-github, which I call a *glog*, which is an accurate name not only in the 
+github, which I call a **glog**, which is an accurate name not only in the 
 github + blog sense, but also in the blog + gulag sense.
+
+I am just picking up Rust so the code here will not be the most idiomatic
+or expressive; though I hope it will be useful for others learning Rust.
+If you find any improvements to the code here or have suggestions I would be
+delighted to hear about them (my email is in my profile).
 
 As a first goal, I want to solve an IOI2016 problem named `molecules` in Rust,
 since the solution I have in mind involves a generic algorithm
 as a subroutine and I will try to implement this subroutine as generally as
-possible using Rust generics and curious to see how this interacts with the
-ownership system. The problem goes as follows:
+possible using Rust generics and am curious to see how this interacts with the
+ownership system. The `molecules` problem goes as follows:
 
 > We are given <img alt="\inline n" src="https://latex.codecogs.com/png.latex?%5Cinline%20n" align="center"/> nonnegative integers <img alt="\inline w_1" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1" align="center"/>, <img alt="\inline w_2, \ldots, w_n\," src="https://latex.codecogs.com/png.latex?%5Cinline%20w_2%2C%20%5Cldots%2C%20w_n%5C%2C" align="center"/> and an 
 > inclusive range <img alt="\inline [l, u]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5Bl%2C%20u%5D" align="center"/>, with the promise that <img alt="\inline u - l \ge
@@ -22,7 +27,8 @@ ownership system. The problem goes as follows:
 > Find a subset of <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/>'s which sum to a number in the range <img alt="\inline [l, u]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5Bl%2C%20u%5D" align="center"/> or if no
 > such set exists, output the empty set.
 
-Assume for a moment that <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/>'s are sorted in increasing order:
+Let us see how we can solve it. Assume for a moment that <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/>'s are sorted in
+increasing order:
 
 <p align=center><img alt="\displaystyle{
 0 \le w_1 \le w_2 \le \cdots \le w_n.
@@ -70,12 +76,14 @@ the "sumth_element", which is a bit like the `std::nth_element` in C++
 
 ### sumth_element
 
+Here is the problem:
+
 > Suppose we are give an unsorted array <img alt="\inline a_1, a_2,\ldots, a_n" src="https://latex.codecogs.com/png.latex?%5Cinline%20a_1%2C%20a_2%2C%5Cldots%2C%20a_n" align="center"/> and a number <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
 > Find the largest <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/> such that the sum of the smallest <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/> elements of <img alt="\inline a" src="https://latex.codecogs.com/png.latex?%5Cinline%20a" align="center"/>
 > is at most <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
 
-I call this the "sumth_element" for lack of a better name (and imagination) and 
-is meant to be in analogy with `std::nth_element`
+I call this the "sumth_element" for lack of a better name and is meant to be in
+analogy with `std::nth_element`
 (if you know the proper name for this do let me know).
 
 If the array was sorted and we had oracle access to prefix sums of <img alt="\inline a" src="https://latex.codecogs.com/png.latex?%5Cinline%20a" align="center"/>,
@@ -87,7 +95,7 @@ let mut r = a.len();
 
 while l < r {
     let m = l + (r - l) / 2;
-    let tail_sum = a[l..=m].iter().sum();
+    let tail_sum = a[l..=m].iter().sum(); // Assume an O(1) time oracle
     if tail_sum <= sum {
         l = m + 1;
         sum -= tail_sum;
@@ -98,19 +106,20 @@ while l < r {
 l
 ```
 Any binary search working on sorted arrays can be translated mechanically to 
-work on arbitrary arrays in <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/> time by using the quickselect algorithm.
+work on arbitrary arrays in <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/> time by calls to the quickselect algorithm.
 It looks like rust standard library does not have a quickselect
 implementation and I'm not even going to think about attempting to implement
 it (I don't think I have ever implemented it, in any language).
 It turns out there are several crates implementing this. I will go with the
-`order_stat` crate:
+`order-stat` crate:
 ```toml
 # Cargo.toml
 [dependencies]
 order-stat = "0.1"
 ```
 
-Here is the version that works on arbitrary arrays:
+Here is the version that does the same as the above binary search but works on
+arbitrary arrays:
 ```rust
 let mut l = 0;
 let mut r = a.len();
@@ -137,23 +146,31 @@ Each invocation of the `order_stat::kth` takes time linear in the size of the
 slice we pass to it. Since the slice size is halved in each iteration, the total
 runtime comes to <img alt="\inline O(n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%29" align="center"/>.
 
-Here is the full code with the generics: [sumth_elements.rs](sumth_element.rs).
-We mutably borrow the input array and further mutably 'lend' it to
-`stat_order::kth` so an explicit lifetime annotation is needed. Apparently,
-the annotation I ended up finding from web searches and trial error and
-stackoverflow is called Higher-Rank Trait Bounds. I don't understand why
-anything but HRTBs would be needed yet, though.
+Now let's do this generically. Here is the signature of the `sumth_element`
+function.
+```rust
+pub fn sumth_element<T, S>(a: &mut [T], mut sum: S) -> (usize, S)
+where
+    T: Ord,
+    for<'a> S: Sum<&'a T> + SubAssign + Ord,
+```
+We mutably borrow a slice of items of type `T` and we assume that the `T`s can
+be summed to obtain an <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
+Since we mutably borrow the input slice and then mutably 'lend' it to
+`stat_order::kth` and immutably lend it to `std::iter::Sum`,
+ it turns out, we need to annotate the lifetime in a special way
+using the so called Higher-Rank Trait Bounds.
 
-If you have cloned this repo, you can run the unit tests by
-```sh
+If you have cloned this repo, you can run the unit tests from repo root  by
+```shell
 cargo test sumth_element --release
 ```
 
-### Linear time solution
+### A linear time solution
 
-Let us go back to `molecues`. Now with the `sumth_element` in hand, here is 
-the linear time solution. First we map the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> array into the array of
-tuples <img alt="\inline (i, w_i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28i%2C%20w_i%29" align="center"/> since at the end we need to output the indices.
+Let us go back to `molecues`. Now with the `sumth_element` in hand, we can
+solve the problem in linear time as follows. First we map the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> array into
+the array of tuples <img alt="\inline (i, w_i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28i%2C%20w_i%29" align="center"/> since at the end we need to output the indices.
 We use `u32` for both the "weights" <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> and the indices so as to make memory
 layout as compact as possible for cache efficiency. However, we need `u64`s 
 whenever we need to sum the weights since for large input instances `u32` will
@@ -206,7 +223,7 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
 }
 ```
 Rust is really expressive! I can't imagine transforming the weights array to
-WeightIndex array in C++ standard library.
+WeightIndex array in C++ standard library (I mean, I do but don't want to).
 Here is the full solution: [molecules.rs](molecules.rs).
 
 ### Official test suite
@@ -214,17 +231,19 @@ Here is the full solution: [molecules.rs](molecules.rs).
 Let us finally try our solution on the official test suite.
 I am having a real tough time finding a good way to parse whitespace separated
 integers from a text file in a streaming fashion with the Rust standard library
-(or any crate I could Google).
+(or any crate I could find).
 The test files can be quite large, especially for problems with small 
-complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a  streaming reader is necessary.
+complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a streaming reader is a necessity.
 Note that usually all data is in one line so the `BufReader::lines()` is
-not going to do it.
+not going to help with this.
 The best thing I could come up with, [bench.rs](https://github.com/saglam/big-rust-preschool/blob/8888750126d77f69146814fc8372addc0b574da5/bench.rs#L11)
 `::test_from_file()`, is not only super ugly, but is also suboptimal—it still
-involves an extra string copy per integer.
+involves an extra string copy per integer. This extra copying is tolerable
+in most languages, but feels silly when you can just parse the integer from the
+buffer directly and safely thanks to the borrow checker.
 I implemented the test runner as a cargo bench to get some timing info.
-You can run the bechmark as so:
-```sh
+You can run the bechmark from the repo root as so:
+```shell
 rustup install nightly
 cargo +nightly bench
 
@@ -239,5 +258,7 @@ test small_tests  ... bench:  34,498,891 ns/iter (+/- 409,675)
 test result: ok. 0 passed; 0 failed; 0 ignored; 4 measured; 0 filtered out
 
 ```
-The numbers are from my Intel(R) Celeron(R) 2955U @ 1.40GHz beast of a 
+The numbers are from my Intel(R) Celeron(R) 2955U @ 1.40GHz (beast of a) 
 workstation.
+
+To be continued...
