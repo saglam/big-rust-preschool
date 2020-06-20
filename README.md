@@ -60,7 +60,9 @@ from smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex
 \mathrm{max}_i w_i - \mathrm{min}_i w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20u%20-%20l%20%5Cge%0A%5Cmathrm%7Bmax%7D_i%20w_i%20-%20%5Cmathrm%7Bmin%7D_i%20w_i" align="center"/>. So we have a value that is initially
 smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/>, and eventually becomes larger than <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/> and in no single step
 jumps from smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> to larger than <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/>. This means that in at least one
-step the value must be in <img alt="\inline [l,u]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5Bl%2Cu%5D" align="center"/>.
+step the value must be in <img alt="\inline [l,u]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5Bl%2Cu%5D" align="center"/>. (Think of it like this. We have to cross a
+river, with <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/> and <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> being on the opposides sides; we can't jump over it;
+so we've got to swim through it.)
 
 This leads to a greedy algorithm in a direct way: Given the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> values, sort
 them, set <img alt="\inline S = \{1,\ldots, t\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%20%3D%20%5C%7B1%2C%5Cldots%2C%20t%5C%7D" align="center"/>, <img alt="\inline T=\{n-t+1,\ldots, n\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20T%3D%5C%7Bn-t%2B1%2C%5Cldots%2C%20n%5C%7D" align="center"/> and update <img alt="\inline S,T" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%2CT" align="center"/>
@@ -76,7 +78,7 @@ the "sumth_element", which is a bit like the `std::nth_element` in C++
 
 ### sumth_element
 
-Here is the problem:
+Here is the setup:
 
 > Suppose we are give an unsorted array <img alt="\inline a_1, a_2,\ldots, a_n" src="https://latex.codecogs.com/png.latex?%5Cinline%20a_1%2C%20a_2%2C%5Cldots%2C%20a_n" align="center"/> and a number <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
 > Find the largest <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/> such that the sum of the smallest <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/> elements of <img alt="\inline a" src="https://latex.codecogs.com/png.latex?%5Cinline%20a" align="center"/>
@@ -155,13 +157,14 @@ where
     for<'a> S: Sum<&'a T> + SubAssign + Ord,
 ```
 We mutably borrow a slice of items of type `T` and we assume that the `T`s can
-be summed to obtain an <img alt="\inline S" src="https://latex.codecogs.com/png.latex?%5Cinline%20S" align="center"/>.
+be summed to obtain an `S`.
 Since we mutably borrow the input slice and then mutably 'lend' it to
 `stat_order::kth` and immutably lend it to `std::iter::Sum`,
  it turns out, we need to annotate the lifetime in a special way
-using the so called Higher-Rank Trait Bounds.
+using the so called Higher-Rank Trait Bounds, which is the last line above.
+You can find the full code in [sumth_element.rs](sumth_element.rs).
 
-If you have cloned this repo, you can run the unit tests from repo root  by
+If you have cloned this repo, you can run the unit tests from repo root by
 ```shell
 cargo test sumth_element --release
 ```
@@ -170,7 +173,7 @@ cargo test sumth_element --release
 
 Let us go back to `molecues`. Now with the `sumth_element` in hand, we can
 solve the problem in linear time as follows. First we map the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> array into
-the array of tuples <img alt="\inline (i, w_i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28i%2C%20w_i%29" align="center"/> since at the end we need to output the indices.
+the array of tuples <img alt="\inline (w_i, i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28w_i%2C%20i%29" align="center"/> since at the end we need to output the indices.
 We use `u32` for both the "weights" <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> and the indices so as to make memory
 layout as compact as possible for cache efficiency. However, we need `u64`s 
 whenever we need to sum the weights since for large input instances `u32` will
@@ -223,7 +226,7 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
 }
 ```
 Rust is really expressive! I can't imagine transforming the weights array to
-WeightIndex array in C++ standard library (I mean, I do but don't want to).
+WeightIndex array in C++ standard library.
 Here is the full solution: [molecules.rs](molecules.rs).
 
 ### Official test suite

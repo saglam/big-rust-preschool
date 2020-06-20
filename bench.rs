@@ -29,6 +29,7 @@ fn test_from_file(file_name: &str) {
         w.push(atoi(&buf).unwrap());
         buf.clear();
     }
+    assert!(w.len() == n);
 
     let mut g = BufReader::new(File::open(file_name.to_owned() + ".a").unwrap());
     g.read_until(b'\n', &mut buf).unwrap();
