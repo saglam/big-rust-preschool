@@ -61,7 +61,7 @@ from smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex
 smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/>, and eventually becomes larger than <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/> and in no single step
 jumps from smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> to larger than <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/>. This means that in at least one
 step the value must be in <img alt="\inline [l,u]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5Bl%2Cu%5D" align="center"/>. (Think of it like this. We have to cross a
-river, with <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/> and <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> being on the opposides sides; we can't jump over it;
+river, with <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/> and <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> being on the opposite sides; we can't jump over it;
 so we've got to swim through it.)
 
 This leads to a greedy algorithm in a direct way: Given the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> values, sort

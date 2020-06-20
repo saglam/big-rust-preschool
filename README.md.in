@@ -59,7 +59,7 @@ from smaller than $l$ to larger than $u$ due to the promise $u - l \ge
 smaller than $l$, and eventually becomes larger than $u$ and in no single step
 jumps from smaller than $l$ to larger than $u$. This means that in at least one
 step the value must be in $[l,u]$. (Think of it like this. We have to cross a
-river, with $u$ and $l$ being on the opposides sides; we can't jump over it;
+river, with $u$ and $l$ being on the opposite sides; we can't jump over it;
 so we've got to swim through it.)
 
 This leads to a greedy algorithm in a direct way: Given the $w_i$ values, sort
