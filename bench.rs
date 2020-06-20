@@ -8,9 +8,9 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use test::Bencher;
 
-fn test_from_file(file_name: &str) {
-    println!("{}", file_name);
-    let mut f = BufReader::new(File::open(file_name).unwrap());
+fn test_from_file(answer_file: &str) {
+    let question_file = &answer_file[..answer_file.len() - 2];
+    let mut f = BufReader::new(File::open(question_file).unwrap());
 
     let mut buf = Vec::new();
     f.read_until(b' ', &mut buf).expect("n missing");
@@ -31,7 +31,7 @@ fn test_from_file(file_name: &str) {
     }
     assert!(w.len() == n);
 
-    let mut g = BufReader::new(File::open(file_name.to_owned() + ".a").unwrap());
+    let mut g = BufReader::new(File::open(answer_file).unwrap());
     g.read_until(b'\n', &mut buf).unwrap();
     buf.clear();
     g.read_until(b'\n', &mut buf).unwrap();
@@ -43,7 +43,7 @@ fn test_from_file(file_name: &str) {
 fn small_tests(b: &mut Bencher) {
     b.iter(|| {
         for i in 1..100 {
-            test_from_file(&format!("testdata/{:02}", i));
+            test_from_file(&format!("testdata/{:02}.a", i));
         }
     });
 }
@@ -52,7 +52,7 @@ fn small_tests(b: &mut Bencher) {
 fn medium_tests(b: &mut Bencher) {
     b.iter(|| {
         for i in 100..110 {
-            test_from_file(&format!("testdata/{:02}", i));
+            test_from_file(&format!("testdata/{:02}.a", i));
         }
     });
 }
@@ -61,7 +61,7 @@ fn medium_tests(b: &mut Bencher) {
 fn large_tests(b: &mut Bencher) {
     b.iter(|| {
         for i in 110..120 {
-            test_from_file(&format!("testdata/{:02}", i));
+            test_from_file(&format!("testdata/{:02}.a", i));
         }
     });
 }
@@ -70,7 +70,7 @@ fn large_tests(b: &mut Bencher) {
 fn huge_tests(b: &mut Bencher) {
     b.iter(|| {
         for i in 121..122 {
-            test_from_file(&format!("testdata/{:02}", i));
+            test_from_file(&format!("testdata/{:02}.a", i));
         }
     });
 }

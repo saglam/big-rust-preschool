@@ -45,9 +45,9 @@ elements.
 
 Now consider the largest $t$-element subset: $w_{n-t+1}, \ldots, w_{n}$.
 If this subset sums to a value smaller than $l$, then there are no solutions
-by our previous observation. If this subset sums to a value no smaller than 
-$l$ on the other hand, a solution is guaranteed to exists and here is why:
-Let 
+by our previous observation. If this subset sums to a value greater than or 
+equal to $l$ on the other hand, a solution is guaranteed to exists and here is 
+why: Let 
 $$
 S = \{1, \ldots, t\} \text{, and } T=\{n-t+1, \ldots, n\}.
 $$
@@ -60,7 +60,7 @@ smaller than $l$, and eventually becomes larger than $u$ and in no single step
 jumps from smaller than $l$ to larger than $u$. This means that in at least one
 step the value must be in $[l,u]$. (Think of it like this. We have to cross a
 river, with $u$ and $l$ being on the opposite sides; we can't jump over it;
-so we've got to swim through it.)
+so we've got to swim through it 🎵)
 
 This leads to a greedy algorithm in a direct way: Given the $w_i$ values, sort
 them, set $S = \{1,\ldots, t\}$, $T=\{n-t+1,\ldots, n\}$ and update $S,T$

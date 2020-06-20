@@ -46,9 +46,9 @@ elements.
 
 Now consider the largest <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/>-element subset: <img alt="\inline w_{n-t+1}, \ldots, w_{n}" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_%7Bn-t%2B1%7D%2C%20%5Cldots%2C%20w_%7Bn%7D" align="center"/>.
 If this subset sums to a value smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/>, then there are no solutions
-by our previous observation. If this subset sums to a value no smaller than 
-<img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> on the other hand, a solution is guaranteed to exists and here is why:
-Let 
+by our previous observation. If this subset sums to a value greater than or 
+equal to <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> on the other hand, a solution is guaranteed to exists and here is 
+why: Let 
 <p align=center><img alt="\displaystyle{
 S = \{1, \ldots, t\} \text{, and } T=\{n-t+1, \ldots, n\}.
 }" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%0AS%20%3D%20%5C%7B1%2C%20%5Cldots%2C%20t%5C%7D%20%5Ctext%7B%2C%20and%20%7D%20T%3D%5C%7Bn-t%2B1%2C%20%5Cldots%2C%20n%5C%7D.%0A%7D"/></p>
@@ -62,7 +62,7 @@ smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Ci
 jumps from smaller than <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> to larger than <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/>. This means that in at least one
 step the value must be in <img alt="\inline [l,u]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5Bl%2Cu%5D" align="center"/>. (Think of it like this. We have to cross a
 river, with <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/> and <img alt="\inline l" src="https://latex.codecogs.com/png.latex?%5Cinline%20l" align="center"/> being on the opposite sides; we can't jump over it;
-so we've got to swim through it.)
+so we've got to swim through it 🎵)
 
 This leads to a greedy algorithm in a direct way: Given the <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> values, sort
 them, set <img alt="\inline S = \{1,\ldots, t\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%20%3D%20%5C%7B1%2C%5Cldots%2C%20t%5C%7D" align="center"/>, <img alt="\inline T=\{n-t+1,\ldots, n\}" src="https://latex.codecogs.com/png.latex?%5Cinline%20T%3D%5C%7Bn-t%2B1%2C%5Cldots%2C%20n%5C%7D" align="center"/> and update <img alt="\inline S,T" src="https://latex.codecogs.com/png.latex?%5Cinline%20S%2CT" align="center"/>
