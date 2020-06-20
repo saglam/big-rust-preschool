@@ -157,7 +157,7 @@ where
     for<'a> S: Sum<&'a T> + SubAssign + Ord,
 ```
 Here `Ord` is short for `std::cmp::Ord` and stands for 'totally ordered', which
-requires that any two <img alt="\inline x,y\in T" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%2Cy%5Cin%20T" align="center"/> must satisfy either <img alt="\inline x\lty" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%3Cy" align="center"/> or <img alt="\inline x\gty" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%3Ey" align="center"/>,
+requires that any two <img alt="\inline x,y\in T" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%2Cy%5Cin%20T" align="center"/> must satisfy either <img alt="\inline x \lt y" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%20%3C%20y" align="center"/> or <img alt="\inline x \gt y" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%20%3E%20y" align="center"/>,
 unless <img alt="\inline x" src="https://latex.codecogs.com/png.latex?%5Cinline%20x" align="center"/> and <img alt="\inline y" src="https://latex.codecogs.com/png.latex?%5Cinline%20y" align="center"/> are equal according to the `std::cmp::PartialEq` trait.
 We mutably borrow a slice of items of type `T` and we assume that the `T`s can
 be summed to obtain an `S`.

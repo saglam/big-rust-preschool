@@ -154,7 +154,7 @@ where
     for<'a> S: Sum<&'a T> + SubAssign + Ord,
 ```
 Here `Ord` is short for `std::cmp::Ord` and stands for 'totally ordered', which
-requires that any two $x,y\in T$ must satisfy either $x<y$ or $x>y$,
+requires that any two $x,y\in T$ must satisfy either $x < y$ or $x > y$,
 unless $x$ and $y$ are equal according to the `std::cmp::PartialEq` trait.
 We mutably borrow a slice of items of type `T` and we assume that the `T`s can
 be summed to obtain an `S`.
