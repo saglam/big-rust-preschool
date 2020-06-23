@@ -1,11 +1,12 @@
 use std::cmp::Ord;
+use std::cmp::Ordering;
 use std::iter::Sum;
 use std::ops::SubAssign;
 
 pub fn sumth_element<T, S>(a: &mut [T], mut sum: S) -> (usize, S)
 where
     T: Ord,
-    for<'a> S: Sum<&'a T> + SubAssign + Ord,
+    S: for<'a> Sum<&'a T> + SubAssign + Ord,
 {
     let mut l = 0;
     let mut r = a.len();
@@ -14,6 +15,34 @@ where
         let m = l + (r - l) / 2;
         order_stat::kth(&mut a[l..r], m - l);
         let tail_sum = a[l..=m].iter().sum();
+        if tail_sum <= sum {
+            l = m + 1;
+            sum -= tail_sum;
+        } else {
+            r = m;
+        }
+    }
+    (l, sum)
+}
+
+pub fn sumth_element_with<T, S, SumFn, CmpFn>(
+    a: &mut [T],
+    mut sum: S,
+    sum_fn: SumFn,
+    cmp_fn: CmpFn,
+) -> (usize, S)
+where
+    S: SubAssign + Ord,
+    SumFn: for<'a> Fn(&'a [T]) -> S,
+    CmpFn: for<'a> Fn(&'a T, &'a T) -> Ordering,
+{
+    let mut l = 0;
+    let mut r = a.len();
+
+    while l < r {
+        let m = l + (r - l) / 2;
+        order_stat::kth_by(&mut a[l..r], m - l, |x, y| cmp_fn(x, y));
+        let tail_sum = sum_fn(&a[l..=m]);
         if tail_sum <= sum {
             l = m + 1;
             sum -= tail_sum;

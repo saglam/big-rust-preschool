@@ -15,11 +15,21 @@ or expressive; though I hope it will be useful for others learning Rust.
 If you find any improvements to the code here or have suggestions I would be
 delighted to hear about them (my email is in my profile).
 
+Contents
+ - [Molecules](#molecules)
+ - [sumth_element](#sumth_element)
+ - [A linear time solution](#a-linear-time-solution)
+ - [Official test suite](#official-test-suite)
+ - [Enter closures](#enter-closures)
+
 As a first goal, I want to solve an IOI2016 problem named `molecules` in Rust,
 since the solution I have in mind involves a generic algorithm
 as a subroutine and I will try to implement this subroutine as generally as
 possible using Rust generics and am curious to see how this interacts with the
-ownership system. The `molecules` problem goes as follows:
+ownership system.
+
+### Molecules problem
+Here is the problem statement:
 
 > We are given <img alt="\inline n" src="https://latex.codecogs.com/png.latex?%5Cinline%20n" align="center"/> nonnegative integers <img alt="\inline w_1" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1" align="center"/>, <img alt="\inline w_2, \ldots, w_n\," src="https://latex.codecogs.com/png.latex?%5Cinline%20w_2%2C%20%5Cldots%2C%20w_n%5C%2C" align="center"/> and an 
 > inclusive range <img alt="\inline [l, u]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5Bl%2C%20u%5D" align="center"/>, with the promise that <img alt="\inline u - l \ge
@@ -35,11 +45,11 @@ increasing order:
 }" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%0A0%20%5Cle%20w_1%20%5Cle%20w_2%20%5Cle%20%5Ccdots%20%5Cle%20w_n.%0A%7D"/></p>
 
 
-Let <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/> be the largest index such that <img alt="\inline w_1 + w_2 +\cdots + w_t \lt l" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1%20%2B%20w_2%20%2B%5Ccdots%20%2B%20w_t%20%3C%20l" align="center"/>. If 
+Let <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/> be the largest index such that <img alt="\inline w_1 + w_2 +\cdots + w_t \lt  l" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1%20%2B%20w_2%20%2B%5Ccdots%20%2B%20w_t%20%3C%20l" align="center"/>. If 
 the sum of the first <img alt="\inline t+1" src="https://latex.codecogs.com/png.latex?%5Cinline%20t%2B1" align="center"/> elements is at most <img alt="\inline u" src="https://latex.codecogs.com/png.latex?%5Cinline%20u" align="center"/>, then we have found a
 solution: a correct answer to the problem is <img alt="\inline [1, t+1]" src="https://latex.codecogs.com/png.latex?%5Cinline%20%5B1%2C%20t%2B1%5D" align="center"/>.
 
-If on the other hand <img alt="\inline w_1+ \cdots + w_{t+1} \gt u" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1%2B%20%5Ccdots%20%2B%20w_%7Bt%2B1%7D%20%3E%20u" align="center"/>, then we know that the smallest
+If on the other hand <img alt="\inline w_1+ \cdots + w_{t+1} \gt  u" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_1%2B%20%5Ccdots%20%2B%20w_%7Bt%2B1%7D%20%3E%20u" align="center"/>, then we know that the smallest
 <img alt="\inline t+1" src="https://latex.codecogs.com/png.latex?%5Cinline%20t%2B1" align="center"/>-element subset is too large and the smallest <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/>-element subset is too
 small. Therefore if there is a correct subset, it must have exactly <img alt="\inline t" src="https://latex.codecogs.com/png.latex?%5Cinline%20t" align="center"/>
 elements.
@@ -142,7 +152,7 @@ l
 That is, wherever the binary search is about to query an index <img alt="\inline m" src="https://latex.codecogs.com/png.latex?%5Cinline%20m" align="center"/>, we do a
 minimal amount of sorting so as to ensure the property required by the binary
 search:
-<p align=center><img alt="\displaystyle{ a[i] \le a[m] \text{ for } i\ltm \text{ and } a[m] \le a[i] \text{ for } m\lti.}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%20a%5Bi%5D%20%5Cle%20a%5Bm%5D%20%5Ctext%7B%20for%20%7D%20i%3Cm%20%5Ctext%7B%20and%20%7D%20a%5Bm%5D%20%5Cle%20a%5Bi%5D%20%5Ctext%7B%20for%20%7D%20m%3Ci.%7D"/></p>
+<p align=center><img alt="\displaystyle{ a[i] \le a[m] \text{ for } i\lt m \text{ and } a[m] \le a[i] \text{ for } m\lt i.}" src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%7B%20a%5Bi%5D%20%5Cle%20a%5Bm%5D%20%5Ctext%7B%20for%20%7D%20i%3Cm%20%5Ctext%7B%20and%20%7D%20a%5Bm%5D%20%5Cle%20a%5Bi%5D%20%5Ctext%7B%20for%20%7D%20m%3Ci.%7D"/></p>
 
 Each invocation of the `order_stat::kth` takes time linear in the size of the 
 slice we pass to it. Since the slice size is halved in each iteration, the total
@@ -157,7 +167,7 @@ where
     for<'a> S: Sum<&'a T> + SubAssign + Ord,
 ```
 Here `Ord` is short for `std::cmp::Ord` and stands for 'totally ordered', which
-requires that any two <img alt="\inline x,y\in T" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%2Cy%5Cin%20T" align="center"/> must satisfy either <img alt="\inline x \lt y" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%20%3C%20y" align="center"/> or <img alt="\inline x \gt y" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%20%3E%20y" align="center"/>,
+requires that any two <img alt="\inline x,y\in T" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%2Cy%5Cin%20T" align="center"/> must satisfy either <img alt="\inline x \lt  y" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%20%3C%20y" align="center"/> or <img alt="\inline x \gt  y" src="https://latex.codecogs.com/png.latex?%5Cinline%20x%20%3E%20y" align="center"/>,
 unless <img alt="\inline x" src="https://latex.codecogs.com/png.latex?%5Cinline%20x" align="center"/> and <img alt="\inline y" src="https://latex.codecogs.com/png.latex?%5Cinline%20y" align="center"/> are equal according to the `std::cmp::PartialEq` trait.
 We mutably borrow a slice of items of type `T` and we assume that the `T`s can
 be summed to obtain an `S`.
@@ -189,23 +199,21 @@ struct WeightIndex {
 }
 
 pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
-    let l = l as u64;
-    let u = u as u64;
     let mut wi: Vec<_> = w
         .iter()
         .enumerate()
         .map(|(i, &w)| WeightIndex { w, i: i as u32 })
         .collect();
 
-    let (t, slack) = sumth_element(&mut wi, l - 1);
+    let (t, slack) = sumth_element(&mut wi, l as u64 - 1);
     if t == wi.len() {
         return vec![];
     }
-    order_stat::kth(&mut wi[t..], 0);
 
-    let sum = l - 1 - slack;
-    if sum + wi[t].w as u64 <= u {
-        return wi[..=t].iter().map(|wi| wi.i).collect();
+    let sum = l - 1 - slack as u32;
+    order_stat::kth(&mut wi[t..], 0);
+    if sum + wi[t].w <= u {
+        return wi[..=t].into_iter().map(|wi| wi.i).collect();
     }
 
     if t + t + 1 < w.len() && t > 0 {
@@ -216,13 +224,13 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
     let mut j = 0;
     let mut k = wi.len() - 1;
     while sum < l && j < t {
-        sum += (wi[k].w - wi[j].w) as u64;
+        sum += wi[k].w - wi[j].w;
         wi.swap(j, k);
         j += 1;
         k -= 1;
     }
     if sum >= l {
-        wi[..t].iter().map(|wi| wi.i).collect()
+        wi[..t].into_iter().map(|wi| wi.i).collect()
     } else {
         vec![]
     }
@@ -242,7 +250,7 @@ The test files can be quite large, especially for problems with small
 complexity (such as <img alt="\inline O(n\log n)" src="https://latex.codecogs.com/png.latex?%5Cinline%20O%28n%5Clog%20n%29" align="center"/>), so a streaming reader is a necessity.
 Note that usually all data is in one line so the `BufReader::lines()` is
 not going to help with this.
-The best thing I could come up with, [bench.rs](https://github.com/saglam/big-rust-preschool/blob/8888750126d77f69146814fc8372addc0b574da5/bench.rs#L11)
+The best thing I could come up with, [bench.rs](https://github.com/saglam/big-rust-preschool/blob/96a86c361583c225a5c06f3fb2d5743e91bd3d0a/bench.rs#L11)
 `::test_from_file()`, is not only super ugly, but is also suboptimal—it still
 involves an extra string copy per integer. This extra copying is tolerable
 in most languages, but feels silly when you can just parse the integer from the
@@ -267,4 +275,98 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 4 measured; 0 filtered out
 The numbers are from my Intel(R) Celeron(R) 2955U @ 1.40GHz (beast of a) 
 workstation.
 
-To be continued...
+### Enter closures
+
+In our implementation above, to keep track of the indices, we created
+a new type `WeightIndex` and described how to sum and compare instances of this
+type to the compiler by implementing the relevant traits. Given the input
+array of weights, we transformed it into the <img alt="\inline (w_i, i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28w_i%2C%20i%29" align="center"/> array and then again
+to indices array before we returned the answer.
+
+Can we avoid these transformations altogether? Instead of working with
+the pairs <img alt="\inline (w_i, i)" src="https://latex.codecogs.com/png.latex?%5Cinline%20%28w_i%2C%20i%29" align="center"/>, let us work with the indices directly and describe
+how to sum and compare these indices via `sum_fn` and `cmp_fn` closures we pass
+around. To do that, first we need to create a version of `sumth_element` which
+not only takes a slice and a sum, but also a sum and compare closure. This I
+will call the `sumth_element_with` function. Here is the signature:
+
+```rust
+pub fn sumth_element_with<T, S, SumFn, CmpFn>(
+    a: &mut [T],
+    mut sum: S,
+    sum_fn: SumFn,
+    cmp_fn: CmpFn,
+) -> (usize, S)
+where
+    S: SubAssign + Ord,
+    SumFn: for<'a> Fn(&'a [T]) -> S,
+    CmpFn: for<'a> Fn(&'a T, &'a T) -> Ordering,
+
+```
+
+With this version of the `sumth_element`, the solution turns into the following.
+
+```rust
+pub fn find_subset2(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
+    let sum_fn = |s: &[u32]| s.iter().fold(0u64, |sum, &i| sum + w[i as usize] as u64);
+
+    let mut ind: Vec<u32> = (0..w.len() as u32).collect();
+    let (t, slack) = sumth_element_with(&mut ind, l as u64 - 1, sum_fn, |&i, &j| {
+        w[i as usize].cmp(&w[j as usize])
+    });
+
+    if t == w.len() {
+        return vec![];
+    }
+    let sum = l - 1 - slack as u32;
+    order_stat::kth_by(&mut ind[t..], 0, |&i, &j| w[i as usize].cmp(&w[j as usize]));
+    if sum + w[ind[t] as usize] <= u {
+        ind.truncate(t + 1);
+        return ind;
+    }
+
+    if t + t + 1 < w.len() && t > 0 {
+        order_stat::kth_by(&mut ind[t + 1..], w.len() - (t + t + 1), |&i, &j| {
+            w[i as usize].cmp(&w[j as usize])
+        });
+    }
+
+    let mut sum = sum;
+    let mut j = 0;
+    let mut k = w.len() - 1;
+    while sum < l && j < t {
+        sum += w[ind[k] as usize] - w[ind[j] as usize];
+        ind.swap(j, k);
+        j += 1;
+        k -= 1;
+    }
+    if sum >= l {
+        ind.truncate(t);
+        ind
+    } else {
+        vec![]
+    }
+}
+```
+
+Let us compare how these two implementations in terms of speed.
+```shell
+     Running target/release/deps/bench-a9da5db63e60670a
+
+running 8 tests
+test huge_tests_1   ... bench:  13,805,424 ns/iter (+/- 58,706)
+test huge_tests_2   ... bench:  14,423,895 ns/iter (+/- 65,680)
+test large_tests_1  ... bench: 165,270,894 ns/iter (+/- 185,669)
+test large_tests_2  ... bench: 178,570,020 ns/iter (+/- 170,748)
+test medium_tests_1 ... bench: 149,847,087 ns/iter (+/- 172,004)
+test medium_tests_2 ... bench: 166,938,070 ns/iter (+/- 330,868)
+test small_tests_1  ... bench:  33,209,788 ns/iter (+/- 86,485)
+test small_tests_2  ... bench:  36,145,058 ns/iter (+/- 99,747)
+```
+The new version is roughly 10% slower. Compared to the first version we lost a 
+ton of memory locality: to make comparisons and summation we need random accesses
+to the <img alt="\inline w" src="https://latex.codecogs.com/png.latex?%5Cinline%20w" align="center"/> array, whereas in the first version <img alt="\inline w_i" src="https://latex.codecogs.com/png.latex?%5Cinline%20w_i" align="center"/> is always carried around
+with the indices. This probably explains the 10% slowdown.
+
+I still have a lingering suspicion about the inlining failure of the closures,
+but I don't know enough about rust tooling to investigate this yet.

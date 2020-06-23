@@ -3,6 +3,7 @@ mod sumth_element;
 use std::cmp::Ordering;
 use std::iter::Sum;
 use sumth_element::sumth_element;
+use sumth_element::sumth_element_with;
 
 #[derive(Eq)]
 struct WeightIndex {
@@ -38,23 +39,21 @@ impl<'a> Sum<&'a WeightIndex> for u64 {
 }
 
 pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
-    let l = l as u64;
-    let u = u as u64;
     let mut wi: Vec<_> = w
         .iter()
         .enumerate()
         .map(|(i, &w)| WeightIndex { w, i: i as u32 })
         .collect();
 
-    let (t, slack) = sumth_element(&mut wi, l - 1);
+    let (t, slack) = sumth_element(&mut wi, l as u64 - 1);
     if t == wi.len() {
         return vec![];
     }
-    order_stat::kth(&mut wi[t..], 0);
 
-    let sum = l - 1 - slack;
-    if sum + wi[t].w as u64 <= u {
-        return wi[..=t].iter().map(|wi| wi.i).collect();
+    let sum = l - 1 - slack as u32;
+    order_stat::kth(&mut wi[t..], 0);
+    if sum + wi[t].w <= u {
+        return wi[..=t].into_iter().map(|wi| wi.i).collect();
     }
 
     if t + t + 1 < w.len() && t > 0 {
@@ -65,25 +64,71 @@ pub fn find_subset(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
     let mut j = 0;
     let mut k = wi.len() - 1;
     while sum < l && j < t {
-        sum += (wi[k].w - wi[j].w) as u64;
+        sum += wi[k].w - wi[j].w;
         wi.swap(j, k);
         j += 1;
         k -= 1;
     }
     if sum >= l {
-        wi[..t].iter().map(|wi| wi.i).collect()
+        wi[..t].into_iter().map(|wi| wi.i).collect()
     } else {
         vec![]
     }
 }
 
-pub fn test(l: u32, u: u32, w: &[u32], solvable: bool) {
-    let s = find_subset(l, u, w);
-    if solvable {
-        assert!((l..=u).contains(&s.iter().map(|&i| w[i as usize]).sum()));
-    } else {
-        assert!(s.is_empty());
+pub fn find_subset2(l: u32, u: u32, w: &[u32]) -> Vec<u32> {
+    let sum_fn = |s: &[u32]| s.iter().fold(0u64, |sum, &i| sum + w[i as usize] as u64);
+
+    let mut ind: Vec<u32> = (0..w.len() as u32).collect();
+    let (t, slack) = sumth_element_with(&mut ind, l as u64 - 1, sum_fn, |&i, &j| {
+        w[i as usize].cmp(&w[j as usize])
+    });
+
+    if t == w.len() {
+        return vec![];
     }
+    let sum = l - 1 - slack as u32;
+    order_stat::kth_by(&mut ind[t..], 0, |&i, &j| w[i as usize].cmp(&w[j as usize]));
+    if sum + w[ind[t] as usize] <= u {
+        ind.truncate(t + 1);
+        return ind;
+    }
+
+    if t + t + 1 < w.len() && t > 0 {
+        order_stat::kth_by(&mut ind[t + 1..], w.len() - (t + t + 1), |&i, &j| {
+            w[i as usize].cmp(&w[j as usize])
+        });
+    }
+
+    let mut sum = sum;
+    let mut j = 0;
+    let mut k = w.len() - 1;
+    while sum < l && j < t {
+        sum += w[ind[k] as usize] - w[ind[j] as usize];
+        ind.swap(j, k);
+        j += 1;
+        k -= 1;
+    }
+    if sum >= l {
+        ind.truncate(t);
+        ind
+    } else {
+        vec![]
+    }
+}
+
+pub fn assert_correct(ans: &[u32], l: u32, u: u32, w: &[u32], solvable: bool) {
+    if solvable {
+        assert!((l..=u).contains(&ans.iter().map(|&i| w[i as usize]).sum()));
+    } else {
+        assert!(ans.is_empty());
+    }
+}
+
+#[cfg(test)]
+fn test(l: u32, u: u32, w: &[u32], solvable: bool) {
+    assert_correct(&find_subset(l, u, w), l, u, w, solvable);
+    assert_correct(&find_subset2(l, u, w), l, u, w, solvable);
 }
 
 #[test]
